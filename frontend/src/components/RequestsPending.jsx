@@ -52,7 +52,7 @@ export default function RequestsPending() {
                             <div className='flex space-x-3'>
                             {request.ProfilePic?
                             
-                            <img src={request.ProfilePic}/>
+                            <img src={request.ProfilePic} className='w-12 h-12 rounded-full'/>
                             :<Avatar sx={{bgcolor:deepPurple[400]}}>{request.Name[0]}</Avatar>}
                             
                             <div>

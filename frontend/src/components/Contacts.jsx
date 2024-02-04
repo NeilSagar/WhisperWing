@@ -1,32 +1,40 @@
 import React, { useEffect, useState } from 'react'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { UserDetails } from '../context/UserContext';
+import Contact_x_Chat_card from './Contact_x_Chat_card';
 
 export default function Contacts({setSideBarMainScreen}) {
-  const {fetchContacts,user} = UserDetails();
-  const [contacts,setContacts] = useState(null);
+  const {user,fetchUserDetails} = UserDetails();
+
   function handleClick(){
     setSideBarMainScreen("chats");
+    fetchUserDetails();
   }
-  useEffect(()=>{
-    if(user && user.Contacts){
-      setContacts(user.Contacts);
-    }
-  },[user]);
+
   return (
-    <div>
-      <div className='flex items-center shadow-sm p-1'>
+    <div className='h-[85vh]'>
+      <div className='flex items-center shadow-sm p-1 h-[5vh]'>
         <button  onClick={handleClick}
         className='hover:border hover:border-white border border-transparent rounded-full'>
           <ArrowBackIcon sx={{color:"white"}}/>
         </button>
         <h3 className='flex-grow ps-3'>Contacts</h3>
       </div>
-      {contacts && contacts.map((contact,index)=>{
+      <div className='h-[80vh] overflow-auto'>
+      {user && user.Contacts && user.Contacts.map((contact,index)=>{
+        const notify = false;
         return(
-          <p>{contact.contactUserName}</p>
+          <Contact_x_Chat_card 
+          key={index} 
+          ProfilePic={contact.contactProfilePic} 
+          Name={contact.contactName} 
+          Secondary={contact.contactUserName}
+          notification={notify}
+          />
         )
       })}
+    
+      </div>
     </div>
   )
 }

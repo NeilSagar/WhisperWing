@@ -41,6 +41,9 @@ const userSchema = mongoose.Schema({
                 required:true,
                 unique:true
             },
+            contactProfilePic:{
+                type:String
+            }
         }],
         required: false,
         default: []

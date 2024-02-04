@@ -37,7 +37,7 @@ export const handleRegister = async(req,res)=>{
             Email,Name,UserName,ProfilePic,Contacts,UserId:newAuth._id
         });
         const newChat = new chatModel({
-            UserName,Name,UserId:newAuth._id
+            UserName,Name,UserId:newAuth._id,ProfilePic
         });
 
         
@@ -139,7 +139,7 @@ export const handleCreateRequest = async (req,res)=>{
     try {
         const chatFromDetails = await chatModel.findOne({ UserName: userNameFrom });
         const chatToDetails = await chatModel.findOne({ UserName: userNameTo });
-
+        const picData = await userModel.findOne({ UserName: userNameFrom }).select('ProfilePic');
         if (!chatFromDetails || !chatToDetails) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -156,6 +156,7 @@ export const handleCreateRequest = async (req,res)=>{
         chatToDetails.RequestsReceived.push({
             Name: chatFromDetails.Name,
             UserName: userNameFrom,
+            ProfilePic:picData.ProfilePic
         });
         
         const result1 = await chatFromDetails.save();
@@ -197,9 +198,10 @@ export const handleRequest = async (req, res) => {
                 {
                     $push: {
                         Contacts: {
-                            contactName: resultTo.UserId,
+                            contactName: resultTo.Name,
                             contactUserName: resultTo.UserName,
-                            contactUserId: resultTo.UserId
+                            contactUserId: resultTo.UserId,
+                            contactProfilePic:resultTo.ProfilePic
                         }
                     }
                 }
@@ -210,9 +212,10 @@ export const handleRequest = async (req, res) => {
                 {
                     $push: {
                         Contacts: {
-                            contactName: resultFrom.UserId,
+                            contactName: resultFrom.Name,
                             contactUserName: resultFrom.UserName,
-                            contactUserId: resultFrom.UserId
+                            contactUserId: resultFrom.UserId,
+                            contactProfilePic:resultFrom.ProfilePic
                         }
                     }
                 }

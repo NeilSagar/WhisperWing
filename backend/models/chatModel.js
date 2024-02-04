@@ -15,6 +15,9 @@ const chatSchema = mongoose.Schema({
         type:String,
         required:true
     },
+    ProfilePic:{
+        type:String,
+    },
     RequestsSent:[{
         Name: {
             type: String,
@@ -35,6 +38,8 @@ const chatSchema = mongoose.Schema({
             type: String,
             required: true,
             unique: true
+        },ProfilePic:{
+            type:String
         }
     }],
     Chats:[{

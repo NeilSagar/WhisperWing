@@ -7,9 +7,9 @@ function UtilsProvider(props){
     async function clearAllUserDetatils(){
         if (!clearFunctions) return;
 
-        for(let i=0;i<clearFunctions.length;i++){
-            clearFunctions[i](null);
-        }
+        // for(let i=0;i<clearFunctions.length;i++){
+        //     clearFunctions[i](null);
+        // }
     }
     return(
     <utilsContext.Provider

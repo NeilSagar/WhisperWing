@@ -9,7 +9,7 @@ import SearchBar from '../components/SearchBar';
 import RequestsPending from '../components/RequestsPending';
 
 export default function Home() {
-  const {window,fetchUserDetails} = UserDetails();
+  const {window,user} = UserDetails();
   function handleWindowDisplay(){
       switch (window) {
         case 'Profile':
@@ -21,7 +21,7 @@ export default function Home() {
         case 'Chat':
           return <Chat/>
         default:
-          return <Profile />;
+          return <Profile UserName={user.UserName}/>;
       }
   }
   return (

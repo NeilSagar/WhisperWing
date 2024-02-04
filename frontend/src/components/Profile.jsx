@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 export default function Profile(props) {
   
   const {logOut} = UserAuth();
-  const{user,profileDetails,createRequest,verdictRequest} = UserDetails();
+  const{user,profileDetails,createRequest,verdictRequest,fetchSearchedDetails} = UserDetails();
 
   const [connectedType,setConnectedType] = useState(null);
 
@@ -47,7 +47,6 @@ export default function Profile(props) {
 
   useEffect(()=>{
     
-
     if (profileDetails === null) return;
 
     if(profileDetails.connected){
@@ -66,11 +65,16 @@ export default function Profile(props) {
     
   },[profileDetails]);
 
+  useEffect(()=>{
+    if(!profileDetails && props.UserName){
+      fetchSearchedDetails(props.UserName);
+    }
+  },[]);
   return (
     <div className='w-full flex flex-col'>
     <div className='flex flex-col items-center justify-center w-full flex-grow'>
       <div>
-      <img src={profileDetails && profileDetails.ProfilePic?profileDetails.ProfilePic:'https://www.profilebakery.com/wp-content/uploads/2023/03/AI-Profile-Picture.jpg'}
+      <img src={profileDetails && profileDetails.ProfilePic?profileDetails.ProfilePic:null}
            className='w-40 rounded-full'
            alt='profile-pic'
       />
