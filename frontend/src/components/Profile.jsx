@@ -11,24 +11,20 @@ import CloseIcon from '@mui/icons-material/Close';
 export default function Profile(props) {
   
   const {logOut} = UserAuth();
-  const{user,searchedUserDetails,createRequest,verdictRequest,fetchUserDetails} = UserDetails();
+  const{user,profileDetails,createRequest,verdictRequest} = UserDetails();
 
-  const [profileDetails,setProfileDetails] = useState(null);
-  const [requested,setRequested] = useState(false);
   const [connectedType,setConnectedType] = useState(null);
-  const [userValueChanged,setUserValueChanged] = useState(false);
-  if(props.user==="self"){
-    fetchUserDetails();
-  }
 
   function handleConnectRequest (){
-      setRequested(true);
+      if(user && profileDetails && user.UserId===profileDetails.UserId)return;
+
       setConnectedType("requestMade");
-      if(user && searchedUserDetails && user.UserName !==searchedUserDetails.UserName){
+      if(user && profileDetails && user.UserName !==profileDetails.UserName){
           createRequest(user.UserName,profileDetails.UserName);
       }
   }
   async function handleAccept(){
+    if(user && profileDetails && user.UserId===profileDetails.UserId)return;
     if(profileDetails && profileDetails.UserName){
         const result = await verdictRequest(profileDetails.UserName,true);
         if(result && result.status ===201){
@@ -38,6 +34,7 @@ export default function Profile(props) {
     
   }
   async function handleReject(){
+    if(user && profileDetails && user.UserId===profileDetails.UserId)return;
     if(profileDetails && profileDetails.UserName){
       const result = await verdictRequest(profileDetails.UserName,false);
       if(result && result.status ===201){
@@ -46,21 +43,12 @@ export default function Profile(props) {
     }
   }
 
-  useEffect(()=>{
-    console.log("hello");
-    if(props.user === "self"){
-      setProfileDetails(user);
 
-    }else if(props.user === "notSelf"){
-      setProfileDetails(searchedUserDetails);
-    }
-  },[props,user]);
 
   useEffect(()=>{
-    console.log(profileDetails);
+    
 
-    if(profileDetails===null)return;
-    if(props.user==="self")return;
+    if (profileDetails === null) return;
 
     if(profileDetails.connected){
       setConnectedType("connected");
@@ -68,8 +56,12 @@ export default function Profile(props) {
       setConnectedType("requestCame");
     }else if(profileDetails.requestMade){
       setConnectedType("requestMade");
-    }else {
+    }else if(user.UserId !== profileDetails.UserId) {
+      console.log("user",user);
+      console.log("profile",profileDetails);
       setConnectedType("addConnection");
+    }else{
+      setConnectedType(null);
     }
     
   },[profileDetails]);
@@ -86,7 +78,8 @@ export default function Profile(props) {
       <p>{profileDetails && profileDetails.Name}</p>
       <p>{profileDetails && profileDetails.Email}</p>
       <p>Connections: {profileDetails && profileDetails.Contacts.length}</p>
-        
+
+
       {connectedType && connectedType==="connected"?
       <div>
         <button disabled className='bg-green-400 rounded-full p-2  px-3 flex items-center'><FaUserFriends/>Connected</button>
@@ -112,9 +105,10 @@ export default function Profile(props) {
           Add Connection <AddIcon/>
         </button>
       </div>:<></>}
+
     </div>
 
-    {props.user && props.user ==="self"?
+    {user && profileDetails &&  user.UserId===profileDetails.UserId?
       <div>
         <button className='text-red-500 font-semibold p-3 transition hover:scale-105 float-right m-2'
                 onClick={logOut}

@@ -1,39 +1,51 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { UserAuth } from "./AuthContext";
 import { handleCreateRequest, handleFetchUserDetails, handleSearchedUserDetails,handleFetchRequests, handleRequestVerdict } from "../services/api";
+import { useUtils } from "./UtilsContext";
 
 
 const userContext = createContext();
 
 function UserProvider({children}){
     const [user, setUser] = useState(JSON.parse(localStorage.getItem("baatchit-profile")));
-    const [window,setWindow] = useState("");
-    const [searchedUserDetails,setSearchedUserDetails] = useState(null);
+    const [window,setWindow] = useState(null);
+    const [profileDetails,setProfileDetails] = useState(null);
     const [requests,setRequests] = useState(null);
-    const {token} = UserAuth();
 
+    const {token} = UserAuth();
+    const {setClearFunctions} = useUtils();
     async function fetchUserDetails() {
         if (token) {
             const userData = await handleFetchUserDetails(token);
             if (userData.status === 201) {
                 // Set the user details using setUser function
                 setUser(userData.message);
+                setProfileDetails(userData.message);
                 localStorage.setItem("baatchit-profile", JSON.stringify(userData.message));
+                return {status:201,result:userData.message};
             }
         }
     }
 
     async function fetchSearchedDetails(username){
+        if (!user) return;
+
         if(user && user.UserName === username){
-            setWindow("Profile");
-            return;
+            const response = await fetchUserDetails();
+            if(response && response.status === 201){
+                setProfileDetails(response.result);
+                setWindow("Profile");
+                return;
+            }
+            if(response)return;
         }
 
-        const response = await handleSearchedUserDetails(user.UserName,username,token);
-        if(response){
-            setSearchedUserDetails(response.message);
-            
-            setWindow("OtherProfile");
+        if(user.UserName !== username){
+            const response = await handleSearchedUserDetails(user.UserName,username,token);
+            if(response){
+                setProfileDetails(response.message);
+                setWindow("Profile");
+            }
         }
     }
 
@@ -65,7 +77,14 @@ function UserProvider({children}){
         }
     }
 
-    
+    useEffect(()=>{
+        setClearFunctions(
+            [setUser,
+            setWindow,
+            setProfileDetails,
+            setRequests]
+        );
+    },[]);
     return (
         <userContext.Provider
             value={{
@@ -73,7 +92,7 @@ function UserProvider({children}){
                 window,setWindow,
                 user,
                 fetchSearchedDetails,
-                searchedUserDetails,
+                profileDetails,setProfileDetails,
                 createRequest,
                 requests,
                 fetchRequests,

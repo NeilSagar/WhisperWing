@@ -9,19 +9,19 @@ import SearchBar from '../components/SearchBar';
 import RequestsPending from '../components/RequestsPending';
 
 export default function Home() {
-  const {window} = UserDetails();
+  const {window,fetchUserDetails} = UserDetails();
   function handleWindowDisplay(){
       switch (window) {
         case 'Profile':
-          return <Profile user="self"/>;
+          return <Profile />;
         case 'Search':
           return <SearchBar/>
-        case 'OtherProfile':
-          return <Profile user="notSelf"/>;
         case 'RequestsPending':
           return <RequestsPending/>
+        case 'Chat':
+          return <Chat/>
         default:
-          return <Chat />;
+          return <Profile />;
       }
   }
   return (

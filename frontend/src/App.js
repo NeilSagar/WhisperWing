@@ -8,8 +8,10 @@ import {AuthProvider} from "./context/AuthContext.js";
 import {UserProvider} from "./context/UserContext.js";
 import PrivateComponent from './components/PrivateComponent.jsx';
 import FetchingPage from './pages/FetchingPage.jsx';
+import { UtilsProvider } from './context/UtilsContext.js';
 function App() {
   return (
+    <UtilsProvider>
     <AuthProvider>
     <UserProvider>
     <div className='flex items-center justify-center h-screen'>
@@ -26,6 +28,7 @@ function App() {
     </div>
     </UserProvider>
     </AuthProvider>
+    </UtilsProvider>
   );
 }
 

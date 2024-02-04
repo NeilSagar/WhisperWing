@@ -1,11 +1,13 @@
 import { createContext, useContext, useState } from "react";
 import { handleLogIn } from "../services/api";
+import { useUtils } from "./UtilsContext";
 
 const AuthContext = createContext();
 
 function AuthProvider({children}){
     const [authErrorMsg, setAuthErrorMsg] = useState(null);
     const [token,setToken] = useState(localStorage.getItem('baatchit-jwt-token'));
+    const {clearAllUserDetatils} = useUtils();
 
     async function logInWithEmailandPassword(logInDetails){
         const result = await handleLogIn(logInDetails);
@@ -19,6 +21,7 @@ function AuthProvider({children}){
         }
     }
     async function logOut(){
+        clearAllUserDetatils();
         localStorage.removeItem('baatchit-jwt-token');
         localStorage.removeItem('baatchit-profile');
         setToken(null);

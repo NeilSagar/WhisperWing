@@ -10,12 +10,20 @@ const backdropStyle={
   }
 
 export default function FetchingPage() {
-    const {fetchUserDetails,user} = UserDetails();
+    const {fetchUserDetails,user,profileDetails,setWindow,setProfileDetails} = UserDetails();
     const navigate = useNavigate();
 
 
     useEffect(()=>{
-        if(user)navigate("/Home");
+        if(user){
+          setProfileDetails(user);
+          setWindow('Profile')
+          
+          if(profileDetails && user && profileDetails.UserId === user.UserId){
+            console.log("navigating to home");
+            navigate("/Home");
+          }
+        }
     },[user]); 
 
     useEffect(()=>{

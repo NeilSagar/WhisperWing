@@ -55,7 +55,6 @@ export const handleSearchedUser = async (searchedUser, token) => {
                 'Authorization': `Bearer ${token}`, // Corrected the header name ('Authorization' to 'Authorization')
             },
         });
-        console.log(response.data.message);
         return { status: response.status, message: response.data.message };
     } catch (error) {
         const response = error.response;
