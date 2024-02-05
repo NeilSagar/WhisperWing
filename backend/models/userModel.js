@@ -1,6 +1,22 @@
 import mongoose from "mongoose";
 
-
+const contactSchema = mongoose.Schema({
+    contactName: {
+        type: String,
+        required: true
+    },
+    contactUserName: {
+        type: String,
+        required: true,
+    },
+    contactUserId:{
+        type:String,
+        required:true,
+    },
+    contactProfilePic:{
+        type:String
+    }
+});
 
 const userSchema = mongoose.Schema({
     UserId:{
@@ -26,25 +42,7 @@ const userSchema = mongoose.Schema({
         type: String
     },
     Contacts: {
-        type: [{
-            contactName: {
-                type: String,
-                required: true
-            },
-            contactUserName: {
-                type: String,
-                required: true,
-                unique:true
-            },
-            contactUserId:{
-                type:String,
-                required:true,
-                unique:true
-            },
-            contactProfilePic:{
-                type:String
-            }
-        }],
+        type: [contactSchema],
         required: false,
         default: []
     },

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { UserAuth } from "./AuthContext";
-import { handleCreateRequest, handleFetchUserDetails, handleSearchedUserDetails,handleFetchRequests, handleRequestVerdict } from "../services/api";
+import { handleCreateRequest, handleFetchUserDetails, handleSearchedUserDetails,handleFetchRequests, handleRequestVerdict, handleFetchChat, handleUpdateChat } from "../services/api";
 import { useUtils } from "./UtilsContext";
 
 
@@ -11,6 +11,8 @@ function UserProvider({children}){
     const [window,setWindow] = useState(null);
     const [profileDetails,setProfileDetails] = useState(null);
     const [requests,setRequests] = useState(null);
+    const [chatWithId,setChatWithId] = useState(null);
+    const [chatDetails,setChatDetails] = useState(null);
 
     const {token} = UserAuth();
     const {setClearFunctions} = useUtils();
@@ -76,6 +78,23 @@ function UserProvider({children}){
             return response;
         }
     }
+    async function fetchChat(){
+        if(chatWithId){
+            const response = await handleFetchChat(user.UserId,chatWithId,token);
+            if(response && response.status === 201){
+                setChatDetails(response.message);
+            }
+        }
+    }
+
+    async function updateChat(chatWithId,message){
+        if(user && chatWithId && message && token){
+            const result = await handleUpdateChat(user.UserId,chatWithId,message,token);
+            if(result){
+                console.log(result);
+            }
+        }
+    }
 
     useEffect(()=>{
         setClearFunctions(
@@ -97,7 +116,11 @@ function UserProvider({children}){
                 requests,
                 fetchRequests,
                 verdictRequest,
-                fetchContacts
+                fetchContacts,
+                chatWithId,setChatWithId,
+                chatDetails,
+                fetchChat,
+                updateChat
             }}
         >
             {children}

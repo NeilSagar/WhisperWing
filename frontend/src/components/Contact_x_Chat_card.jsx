@@ -1,12 +1,17 @@
 import React, { useEffect } from 'react'
+import { UserDetails } from '../context/UserContext';
 
 export default function Contact_x_Chat_card(props) {
-    useEffect(()=>{
-        console.log(props);
-    },[props]);
+    const {user,setWindow,setChatWithId} = UserDetails();
+    function handleOpenChat(contactId){
+        setChatWithId(contactId);
+        setWindow('Chat');
+    }
   return (
     <div>
-        <div className='p-2 flex items-center bg-slate-300 rounded-md my-2'>
+        <div className='p-2 flex items-center bg-slate-400 rounded-md my-1 hover:cursor-pointer'
+            onClick={()=>handleOpenChat(props.contactId)}
+        >
             <div className='icon '>
                 <img className='w-10 h-10 rounded-full'
                 src={props.ProfilePic}/>

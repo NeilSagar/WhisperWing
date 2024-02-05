@@ -1,6 +1,9 @@
 import React from 'react'
+import { UserDetails } from '../context/UserContext';
 
 export default function ChatBox() {
+    const {chatDetails,chatWithId} = UserDetails();
+
   return (
     <div className='flex-grow '>
         <div className='other mx-5 w-1/2'>

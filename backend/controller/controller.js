@@ -220,6 +220,34 @@ export const handleRequest = async (req, res) => {
                     }
                 }
             ).lean();
+
+            await chatModel.findOneAndUpdate(
+                { UserId: resultFrom.UserId },
+                {
+                    $push: {
+                        Chats: {
+                            Name: resultTo.Name,
+                            UserName: resultTo.UserName,
+                            UserId: resultTo.UserId,
+                            ProfilePic:resultTo.ProfilePic
+                        }
+                    }
+                }
+            ).lean();
+    
+            await chatModel.findOneAndUpdate(
+                { UserId: resultTo.UserId },
+                {
+                    $push: {
+                        Chats: {
+                            Name: resultFrom.Name,
+                            UserName: resultFrom.UserName,
+                            UserId: resultFrom.UserId,
+                            ProfilePic:resultFrom.ProfilePic
+                        }
+                    }
+                }
+            ).lean();
         }
 
         await chatModel.findOneAndUpdate(
@@ -234,6 +262,79 @@ export const handleRequest = async (req, res) => {
 
         return res.status(201).json({ message: "connected" });
     } catch (error) {
+        console.log(error.message);
         res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+export const handleFetchingChat = async (req,res)=>{
+    const {userId,chatWithId} = req.body;
+    
+    try {
+        if(!userId || !chatWithId) return res.status(404).status({message:"FromId to ToId required"});
+        
+        const chatWithQuery = await chatModel.findOne({ "UserId": userId }).select('Chats');
+        if(chatWithQuery){
+            const targetChat = chatWithQuery.Chats.find(chat => chat.UserId === chatWithId);
+            const {
+                UserId:chatWithUserId,
+                UserName:chatWithUserName,
+                Name:chatWithName,
+                ProfilePic:chatWithProfilePic
+            } = targetChat;
+            const last100Messages = targetChat.conversation.slice(-100);
+            const chatWithDetails ={chatWithUserId,chatWithUserName,chatWithName,chatWithProfilePic,last100Messages};
+            return res.status(201).json({message:chatWithDetails});
+        }
+        if(!chatWithQuery){
+            return res.status(404).json({message:"Chats data not available for this UserId"});
+        }
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error."});
+    }
+}
+
+export const handleUpdatingChat=async (req,res)=>{
+    const {chatWithId,UserId,message}=req.body;
+    try {
+        if(!chatWithId || !UserId || !message){
+            return res.status(404).json({message:"Need chatWithId,UserId,message"});
+        }
+        const conversationData = {
+            From:UserId,
+            Message:message
+        }
+        
+        const result_From = await chatModel.findOne({ UserId: UserId }).select('Chats');
+        const result_To = await chatModel.findOne({ UserId: chatWithId }).select('Chats');
+        if (result_From) {
+            const index = result_From.Chats.findIndex(chat => chat.UserId === chatWithId);
+
+            if (index !== -1) {
+                const targetUser = result_From.Chats[index];
+
+                if (targetUser) {
+                    targetUser.conversation.push(conversationData);
+                    result_From.markModified('Chats'); // Notify Mongoose about the modification
+                    await result_From.save();
+                }
+            }
+        }
+        if(result_To){
+            const index = result_To.Chats.findIndex(chat => chat.UserId === UserId);
+            if(index!==-1){
+                const targetUser = result_To.Chats[index];
+
+                if(targetUser){
+                    targetUser.conversation.push(conversationData);
+                    result_To.markModified('Chats');
+                    await result_To.save();
+                }
+            }
+        }
+        return res.status(201).json({message:"updated chats"});
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({message:"Internal Server Error."});
     }
 }

@@ -7,7 +7,9 @@ import {
     handleSearchedUserDetails,
     handleCreateRequest,
     handleFetchRequests,
-    handleRequest } from "../controller/controller.js";
+    handleRequest, 
+    handleFetchingChat,
+    handleUpdatingChat} from "../controller/controller.js";
 import authenticateJwt from "../middleware/middleware.js";
 
 const router = Router();
@@ -20,4 +22,7 @@ router.post("/getSearchedUserDetails",authenticateJwt,handleSearchedUserDetails)
 router.post("/createRequest",authenticateJwt,handleCreateRequest);
 router.post("/fetchRequests",authenticateJwt,handleFetchRequests);
 router.post("/handleRequest",authenticateJwt,handleRequest);
+router.post("/fetchchat",authenticateJwt,handleFetchingChat);
+router.post("/updateChat",authenticateJwt,handleUpdatingChat);
+
 export default router;

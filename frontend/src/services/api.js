@@ -143,3 +143,44 @@ export const handleRequestVerdict = async (From,To,Verdict,token)=>{
         return { status, message };
     }
 }
+
+export const handleFetchChat = async(userId,chatWithId,token)=>{
+    const data = JSON.stringify({userId,chatWithId});
+    try {
+        const response = await axios.post(url+"/fetchchat",data,{
+            withCredentials:true,
+            headers:{
+                'Content-Type': 'application/json',
+                "Authorization":"Bearer "+token
+            }
+        });
+        
+        return { status: response.status, message: response.data.message };
+    } catch (error) {
+        const response = error.response;
+        const status = response ? response.status : 500;
+        const message = response ? response.data.message : error.message;
+        console.log(message);
+        return { status, message };
+    }
+}
+
+export const handleUpdateChat = async (UserId,chatWithId,message,token)=>{
+    const data = {UserId,chatWithId,message};
+    try {
+        const response = await axios.post(url+"/updateChat",data,{
+            withCredentials:true,
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+token
+            }
+        });
+        return { status: response.status, message: response.data.message };
+    } catch (error) {
+        const response = error.response;
+        const status = response ? response.status : 500;
+        const message = response ? response.data.message : error.message;
+        console.log(message);
+        return { status, message };
+    }
+}

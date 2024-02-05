@@ -4,13 +4,17 @@ import { UserDetails } from '../context/UserContext';
 import Contact_x_Chat_card from './Contact_x_Chat_card';
 
 export default function Contacts({setSideBarMainScreen}) {
-  const {user,fetchUserDetails} = UserDetails();
+  const {user,fetchUserDetails,setWindow} = UserDetails();
 
   function handleClick(){
     setSideBarMainScreen("chats");
     fetchUserDetails();
   }
 
+  function handleOpenChat(){
+    console.log("hello");
+    // setWindow('Chat');
+  }
   return (
     <div className='h-[85vh]'>
       <div className='flex items-center shadow-sm p-1 h-[5vh]'>
@@ -30,6 +34,7 @@ export default function Contacts({setSideBarMainScreen}) {
           Name={contact.contactName} 
           Secondary={contact.contactUserName}
           notification={notify}
+          contactId ={contact.contactUserId}
           />
         )
       })}
