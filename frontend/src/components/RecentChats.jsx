@@ -22,12 +22,14 @@ export default function RecentChats() {
     <div className='overflow-auto h-[85vh] pt-1'>
     {reversedRecentChats && reversedRecentChats.map((chat,index)=>{
       const timeStamp = new Date(chat.lastMessage.TimeStamp);
-      const hour = timeStamp.getHours();
-      const minutes = timeStamp.getMinutes();
+      let hour = timeStamp.getHours();
+      let minutes = timeStamp.getMinutes();
+      if(hour<10)hour = "0"+hour;
+      if(minutes<10)minutes = "0"+minutes;
       if(chatWithId === chat.UserId)
       console.log( chat.UserName);
       return (
-        <div key={index} className={`p-2 flex items-center  ${chatWithId === chat.UserId ? 'bg-slate-700 text-white' : 'bg-slate-400 hover:bg-slate-500'} rounded-md `}
+        <div key={index} className={`p-2 flex items-center hover:cursor-default  ${chatWithId === chat.UserId ? 'bg-slate-700 text-white' : 'bg-slate-400 hover:bg-slate-500'} rounded-md `}
           onClick={()=>handleRecentChatSelect(index)}
         >
           <div className='icon '>
@@ -40,13 +42,18 @@ export default function RecentChats() {
             </p>
           <div className='flex items-end'>
             <p>You: </p>
-            <p className='ml-1'>  {chat.lastMessage.Message}</p>
+            <p className='ml-1'>  {chat.lastMessage.Message.slice(0,12)}...</p>
             <p className='text-xs w-fit ml-auto'>{hour}:{minutes}</p>
           </div>
         </div>
       </div>
       )
-    })}  
+    })} 
+    {!reversedRecentChats || reversedRecentChats.length ===0?
+      <div className="p-2 bg-slate-400 rounded-md">
+          <p className='text-center'>No recent chats.</p>
+      </div>:<></>
+    } 
     </div>
   )
 }

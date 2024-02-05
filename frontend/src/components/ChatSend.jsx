@@ -3,7 +3,7 @@ import AttachmentIcon from '@mui/icons-material/Attachment';
 import SendIcon from '@mui/icons-material/Send';
 import { UserDetails } from '../context/UserContext';
 export default function ChatSend({setChats}) {
-  const {chatDetails,chatWithId,updateChat} = UserDetails();
+  const {chatDetails,chatWithId,updateChat,setRecentChats} = UserDetails();
   const [message,setMessage] = useState("");
 
   function handleChange(e){
@@ -18,6 +18,17 @@ export default function ChatSend({setChats}) {
         if(response && response.status===201){
             setChats(prev=>{
               return [...prev,response.message];
+            });
+            setRecentChats((prev)=>{
+              const newRecentChat = prev.filter((recentChat)=>recentChat.UserId!==chatWithId);
+              newRecentChat.push({
+                Name:chatDetails.chatWithName,
+                UserId:chatDetails.chatWithUserId,
+                ProfilePic:chatDetails.chatWithProfilePic,
+                UserName:chatDetails.chatWithUserName,
+                lastMessage:response.message
+              });
+              return newRecentChat;
             });
         }
     }

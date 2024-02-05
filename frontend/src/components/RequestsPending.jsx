@@ -13,7 +13,6 @@ export default function RequestsPending() {
         const FromUsername = pendingRequests[index].UserName;
         const result = await verdictRequest(FromUsername,true);
         if(result && result.status === 201){
-            console.log("accepted");
             const updated_pendingRequests = pendingRequests.filter((request)=>request.UserName!==pendingRequests[index].UserName);
             setPendingRequests(updated_pendingRequests);
         }
@@ -22,7 +21,6 @@ export default function RequestsPending() {
         const FromUsername = pendingRequests[index].UserName;
         const result = await verdictRequest(FromUsername,false);
         if(result.status === 201){
-            console.log("rejected");
             const updated_pendingRequests = pendingRequests.filter((request)=>request.UserName!==pendingRequests[index].UserName);
             setPendingRequests(updated_pendingRequests);
         }
@@ -45,7 +43,6 @@ export default function RequestsPending() {
 
             <div className='h-2/3'>
                 {pendingRequests && pendingRequests.map((request,index)=>{
-                    console.log(request);
                     return (
                     <div key={index}>
                         <div  className='flex items-center p-2 justify-between'>
