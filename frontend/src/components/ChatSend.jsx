@@ -21,12 +21,13 @@ export default function ChatSend() {
     }
     setMessage("");
   }
+
   useEffect(()=>{
     setMessage("");
   },[chatWithId]);
 
   return (
-    <div className='flex bg-white items-center px-2 h-[10vh]'>
+    <div className='flex bg-white items-center px-2 h-[9vh]'>
         <div className='flex-grow '>
             <textarea  className='w-full  text-lg focus:outline-none resize-none h-auto'
             placeholder='your message' 

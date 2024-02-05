@@ -91,7 +91,7 @@ function UserProvider({children}){
         if(user && chatWithId && message && token){
             const result = await handleUpdateChat(user.UserId,chatWithId,message,token);
             if(result){
-                console.log(result);
+                return {status:result.status};
             }
         }
     }
