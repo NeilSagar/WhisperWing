@@ -8,6 +8,11 @@ import chatModel from "../models/chatModel.js";
 import dotenv from "dotenv";
 dotenv.config();
 
+function sortByLastMessageTimeStamp(a, b) {
+    const val =   a.lastMessage.TimeStamp - b.lastMessage.TimeStamp;
+    return val;
+}
+
 export const handleRegister = async(req,res)=>{
     const data = req.body;
     try {
@@ -83,7 +88,28 @@ export const handleUserDetails=async(req,res)=>{
     try {
         const result = await userModel.findOne({UserId:_id}).select();
         if(result === null) return res.status(404).json({message:"not found"});
-        return res.status(201).json({message:result});
+        const chatsQuery = await chatModel.findOne({UserId:_id}).select('Chats');
+        const recentChats = []; 
+        
+        if(chatsQuery){
+            const chats = chatsQuery.Chats;
+            
+            for(let i=0;i<chats.length;i++){
+                if(chats[i].conversation.length!==0){
+                    const curr = {
+                        UserName:chats[i].UserName,
+                        UserId:chats[i].UserId,
+                        Name:chats[i].Name,
+                        ProfilePic:chats[i].ProfilePic,
+                        lastMessage:chats[i].conversation[chats[i].conversation.length-1]
+                    }
+                    recentChats.push(curr);
+                }
+            }
+            recentChats.sort(sortByLastMessageTimeStamp);
+            
+        }
+        return res.status(201).json({message:result,recentChats:recentChats});
     } catch (error) {
         return res.status(500).json({message:error.message});
     }
@@ -307,6 +333,8 @@ export const handleUpdatingChat=async (req,res)=>{
         
         const result_From = await chatModel.findOne({ UserId: UserId }).select('Chats');
         const result_To = await chatModel.findOne({ UserId: chatWithId }).select('Chats');
+
+        let TimeStamp = null;
         if (result_From) {
             const index = result_From.Chats.findIndex(chat => chat.UserId === chatWithId);
 
@@ -315,6 +343,8 @@ export const handleUpdatingChat=async (req,res)=>{
 
                 if (targetUser) {
                     targetUser.conversation.push(conversationData);
+                    TimeStamp = targetUser.conversation[targetUser.conversation.length-1].TimeStamp;
+                    conversationData['TimeStamp'] = TimeStamp;
                     result_From.markModified('Chats'); // Notify Mongoose about the modification
                     await result_From.save();
                 }
@@ -327,12 +357,13 @@ export const handleUpdatingChat=async (req,res)=>{
 
                 if(targetUser){
                     targetUser.conversation.push(conversationData);
+                    // console.log(conversationData.TimeStamp);
                     result_To.markModified('Chats');
                     await result_To.save();
                 }
             }
         }
-        return res.status(201).json({message:"updated chats"});
+        return res.status(201).json({message:conversationData});
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({message:"Internal Server Error."});

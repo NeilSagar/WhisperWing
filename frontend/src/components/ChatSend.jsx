@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import SendIcon from '@mui/icons-material/Send';
 import { UserDetails } from '../context/UserContext';
-export default function ChatSend() {
+export default function ChatSend({setChats}) {
   const {chatDetails,chatWithId,updateChat} = UserDetails();
   const [message,setMessage] = useState("");
 
@@ -15,8 +15,10 @@ export default function ChatSend() {
     }
     if(chatDetails && chatWithId === chatDetails.chatWithUserId){
         const response = await updateChat(chatWithId,message);
-        if(response){
-          console.log(response);
+        if(response && response.status===201){
+            setChats(prev=>{
+              return [...prev,response.message];
+            });
         }
     }
     setMessage("");

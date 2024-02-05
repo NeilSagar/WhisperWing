@@ -35,7 +35,7 @@ export const handleFetchUserDetails = async (token)=>{
               'Authorization': `Bearer ${token}`,
             },
           });
-          return {status:response.status,message:response.data.message};
+          return {status:response.status,message:response.data.message,recentChats:response.data.recentChats};
     } catch (error) {
         const response = error.response ;
         const status = response ? response.status : 500;

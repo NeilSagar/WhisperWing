@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { UserDetails } from '../context/UserContext';
 
 export default function ContactSearchbar({setSideBarMainScreen}) {
+  const {fetchUserDetails} = UserDetails();
+  
   const [searchedUser, setSearchedUser] = useState("");
   function handleSearchingContacts(e){
     if(e.key === "Enter"){
@@ -8,6 +11,7 @@ export default function ContactSearchbar({setSideBarMainScreen}) {
     }
   }
   function handleClick(){
+    fetchUserDetails();
     setSideBarMainScreen("contacts");
   }
   

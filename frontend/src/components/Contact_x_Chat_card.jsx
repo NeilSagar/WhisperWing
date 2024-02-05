@@ -5,6 +5,7 @@ export default function Contact_x_Chat_card(props) {
     const {user,setWindow,setChatWithId} = UserDetails();
     function handleOpenChat(contactId){
         setChatWithId(contactId);
+        props.setSideBarMainScreen("chats");
         setWindow('Chat');
     }
   return (

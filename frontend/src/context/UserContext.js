@@ -13,6 +13,7 @@ function UserProvider({children}){
     const [requests,setRequests] = useState(null);
     const [chatWithId,setChatWithId] = useState(null);
     const [chatDetails,setChatDetails] = useState(null);
+    const [recentChats,setRecentChats] = useState(null);
 
     const {token} = UserAuth();
     const {setClearFunctions} = useUtils();
@@ -22,6 +23,7 @@ function UserProvider({children}){
             if (userData.status === 201) {
                 // Set the user details using setUser function
                 setUser(userData.message);
+                setRecentChats(userData.recentChats);
                 setProfileDetails(userData.message);
                 localStorage.setItem("baatchit-profile", JSON.stringify(userData.message));
                 return {status:201,result:userData.message};
@@ -84,6 +86,7 @@ function UserProvider({children}){
             if(response && response.status === 201){
                 setChatDetails(response.message);
             }
+            console.log(response);
         }
     }
 
@@ -91,7 +94,7 @@ function UserProvider({children}){
         if(user && chatWithId && message && token){
             const result = await handleUpdateChat(user.UserId,chatWithId,message,token);
             if(result){
-                return {status:result.status};
+                return {status:result.status,message:result.message};
             }
         }
     }
@@ -120,7 +123,8 @@ function UserProvider({children}){
                 chatWithId,setChatWithId,
                 chatDetails,
                 fetchChat,
-                updateChat
+                updateChat,
+                recentChats,setRecentChats
             }}
         >
             {children}

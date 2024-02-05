@@ -8,7 +8,6 @@ export default function Contacts({setSideBarMainScreen}) {
 
   function handleClick(){
     setSideBarMainScreen("chats");
-    fetchUserDetails();
   }
 
   function handleOpenChat(){
@@ -35,6 +34,7 @@ export default function Contacts({setSideBarMainScreen}) {
           Secondary={contact.contactUserName}
           notification={notify}
           contactId ={contact.contactUserId}
+          setSideBarMainScreen = {setSideBarMainScreen}
           />
         )
       })}
