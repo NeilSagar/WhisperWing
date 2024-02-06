@@ -14,7 +14,6 @@ export default function Chat() {
   },[chatDetails]);
 
   useEffect(()=>{
-    console.log("calling fetch");
     fetchChat();
   },[chatWithId]);
 
