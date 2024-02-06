@@ -86,7 +86,6 @@ function UserProvider({children}){
             if(response && response.status === 201){
                 setChatDetails(response.message);
             }
-            console.log(response);
         }
     }
 
