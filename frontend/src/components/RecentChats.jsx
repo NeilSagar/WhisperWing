@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { UserDetails } from '../context/UserContext'
+import Avatar from '@mui/material/Avatar';
+import { deepOrange } from '@mui/material/colors';
 
 export default function RecentChats() {
   const {recentChats,setChatWithId,setWindow,chatWithId} = UserDetails();
@@ -7,10 +9,14 @@ export default function RecentChats() {
 
   function handleRecentChatSelect(index){
     const openChatWithId = reversedRecentChats[index].UserId;
+    console.log(openChatWithId);
     setChatWithId(openChatWithId);
+
     setWindow('Chat');
   }
-
+  useEffect(()=>{
+    console.log(chatWithId);
+  },[chatWithId]);
   useEffect(()=>{
     if(recentChats){
       const reversedChats = [...recentChats].reverse();
@@ -32,8 +38,8 @@ export default function RecentChats() {
           onClick={()=>handleRecentChatSelect(index)}
         >
           <div className='icon '>
-            <img className='w-10 h-10 rounded-full'
-            src={chat.ProfilePic}/>
+            {chat.ProfilePic?<img className='w-10 h-10 rounded-full'
+            src={chat.ProfilePic}/>:<Avatar sx={{ bgcolor: deepOrange[500] }}>{chat.Name && chat.Name[0]}</Avatar>}
           </div>
           <div className='flex-grow  py-1 px-2'>
             <p className='text-lg font-semibold'>

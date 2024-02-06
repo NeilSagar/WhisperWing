@@ -2,6 +2,9 @@ import React from 'react'
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import SearchIcon from '@mui/icons-material/Search';
 import { UserDetails } from '../context/UserContext';
+import Avatar from '@mui/material/Avatar';
+import { deepOrange } from '@mui/material/colors';
+
 export default function Navbar() {
   const {setWindow} = UserDetails();
   const {user,fetchSearchedDetails} = UserDetails();
@@ -22,10 +25,10 @@ export default function Navbar() {
               <SearchIcon onClick={()=>{setWindow('Search')}} sx={{color:"white"}}/>
               <AccessTimeIcon onClick={()=>{setWindow('RequestsPending')}} sx={{color:"white"}}/>
               <div onClick={handleOpenProfile} >
-                <img src={user.ProfilePic}
+                {user && user.ProfilePic?<img src={user.ProfilePic}
                     className='w-11 h-11  rounded-full object-cover'
                     alt='profile-pic'
-                />
+                />:<Avatar sx={{ bgcolor: deepOrange[500] }}>{user && user.Name && user.Name[0]}</Avatar>}
               </div>
             </div>
         </div>

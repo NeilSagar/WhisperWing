@@ -14,6 +14,9 @@ export default function Contacts({setSideBarMainScreen}) {
     console.log("hello");
     // setWindow('Chat');
   }
+  useEffect(()=>{
+    console.log(user.Contacts);
+  },[]);
   return (
     <div className='h-[85vh]'>
       <div className='flex items-center shadow-sm p-1 h-[5vh]'>

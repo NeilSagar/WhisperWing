@@ -4,7 +4,7 @@ import ChatBox from './ChatBox'
 import ChatSend from './ChatSend'
 import { UserDetails } from '../context/UserContext';
 
-export default function Chat() {
+export default function Chat({socket}) {
   const {chatWithId,fetchChat,chatDetails} = UserDetails();
 
   const [chats,setChats] = useState(null);
@@ -22,7 +22,7 @@ export default function Chat() {
     <div className='w-full flex flex-col'>
         <ChatNavbar />
         <ChatBox chats={chats}/>
-        <ChatSend setChats={setChats}/>
+        <ChatSend setChats={setChats} socket={socket}/>
     </div>
   )
 }

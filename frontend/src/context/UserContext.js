@@ -14,7 +14,6 @@ function UserProvider({children}){
     const [chatWithId,setChatWithId] = useState(null);
     const [chatDetails,setChatDetails] = useState(null);
     const [recentChats,setRecentChats] = useState(null);
-
     const {token} = UserAuth();
     const {setClearFunctions} = useUtils();
     async function fetchUserDetails() {
@@ -23,6 +22,7 @@ function UserProvider({children}){
             if (userData.status === 201) {
                 // Set the user details using setUser function
                 setUser(userData.message);
+
                 setRecentChats(userData.recentChats);
                 setProfileDetails(userData.message);
                 localStorage.setItem("baatchit-profile", JSON.stringify(userData.message));
@@ -77,6 +77,7 @@ function UserProvider({children}){
         const To = user.UserName;
         const response = await handleRequestVerdict(From,To,Verdict,token);
         if(response ){
+            fetchUserDetails();
             return response;
         }
     }
@@ -103,7 +104,10 @@ function UserProvider({children}){
             [setUser,
             setWindow,
             setProfileDetails,
-            setRequests]
+            setRequests,
+            setChatWithId,
+            setChatDetails,
+            setRecentChats]
         );
     },[]);
     return (
@@ -120,7 +124,7 @@ function UserProvider({children}){
                 verdictRequest,
                 fetchContacts,
                 chatWithId,setChatWithId,
-                chatDetails,
+                chatDetails,setChatDetails,
                 fetchChat,
                 updateChat,
                 recentChats,setRecentChats

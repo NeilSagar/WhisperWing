@@ -1,35 +1,32 @@
 import jwt from "jsonwebtoken";
 import chatModel from "../models/chatModel.js";
 
-const socketMiddleware = async (socket,next)=>{
-    const token = await socket.handshake.auth.token;
-    if(token){
-        console.log(token);
-        const {UserId} = jwt.decode(token);
-        if(!UserId){
-            const err = new Error("UserId required.");
-            err.data = { content: "Please try after logging in." };
-            next(err);
-        }
-        try {
-            const foundUser = await chatModel.findOne({UserId});
-            if(!foundUser){
-                const err = new Error("not authorized");
-                err.data = { content: "Please retry later" };
-                next(err);
-            }
-            console.log("connected");
-            next();
-        } catch (error) {
-            console.log(error.message);
-            const err = new Error("not authorized");
-            err.data = { content: error.message };
-            next(err);
-        }
-    }
-}
 
-export {socketMiddleware};
+const socketMiddleware = async (socket, next) => {
+    
+    try {
+        const token = await socket.handshake.auth.token;
+        if (!token) {
+            throw new Error("Token not provided.");
+        }
+        
+        const { userId } = jwt.decode(token);
+        if (!userId) {
+            throw new Error("UserId required.");
+        }
+        const foundUser = await chatModel.findOne({ UserId:userId });
+        if (!foundUser) {
+            throw new Error("User not authorized.");
+        }
+        next();
+    } catch (error) {
+        console.error("Socket connection error:", error.message);
+        next(error);
+    }
+};
+
+export { socketMiddleware };
+
 
 
 

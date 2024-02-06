@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import ContactSearchbar from './ContactSearchbar'
 import RecentChats from './RecentChats'
-import Footer from './Footer'
 import Contacts from './Contacts';
 
 export default function Sidebar() {

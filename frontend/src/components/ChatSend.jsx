@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import SendIcon from '@mui/icons-material/Send';
 import { UserDetails } from '../context/UserContext';
-export default function ChatSend({setChats}) {
-  const {chatDetails,chatWithId,updateChat,setRecentChats} = UserDetails();
+export default function ChatSend({setChats,socket}) {
+  const {user,chatDetails,chatWithId,updateChat,setRecentChats} = UserDetails();
   const [message,setMessage] = useState("");
 
   function handleChange(e){
     setMessage(e.target.value);
+
   }
   async function handleSendMessage(){
     if(message.length===0){
@@ -16,7 +17,10 @@ export default function ChatSend({setChats}) {
     if(chatDetails && chatWithId === chatDetails.chatWithUserId){
         const response = await updateChat(chatWithId,message);
         if(response && response.status===201){
-
+            const TimeStamp = response.message.TimeStamp;
+            if(socket){
+              socket.emit("chat-message",{UserId:user.UserId,chatWithId,Message:message,TimeStamp});
+            }
             setChats(prev=>{
               return [...prev,response.message];
             });
