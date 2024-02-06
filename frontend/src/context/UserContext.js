@@ -56,7 +56,7 @@ function UserProvider({children}){
     async function createRequest(UserNameFrom,UserNameTo){
         const response = await handleCreateRequest(UserNameFrom,UserNameTo,token);
         if(response && response.status===201){
-            console.log(response);
+            return response;
         }
     }
 

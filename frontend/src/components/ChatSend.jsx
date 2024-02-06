@@ -16,9 +16,11 @@ export default function ChatSend({setChats}) {
     if(chatDetails && chatWithId === chatDetails.chatWithUserId){
         const response = await updateChat(chatWithId,message);
         if(response && response.status===201){
+
             setChats(prev=>{
               return [...prev,response.message];
             });
+
             setRecentChats((prev)=>{
               const newRecentChat = prev.filter((recentChat)=>recentChat.UserId!==chatWithId);
               newRecentChat.push({
@@ -30,6 +32,7 @@ export default function ChatSend({setChats}) {
               });
               return newRecentChat;
             });
+            
         }
     }
     setMessage("");

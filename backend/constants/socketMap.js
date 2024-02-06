@@ -1,0 +1,3 @@
+const socketMap={};
+
+export {socketMap};

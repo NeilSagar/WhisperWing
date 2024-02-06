@@ -15,12 +15,17 @@ export default function Profile(props) {
 
   const [connectedType,setConnectedType] = useState(null);
 
-  function handleConnectRequest (){
+  async function handleConnectRequest (){
       if(user && profileDetails && user.UserId===profileDetails.UserId)return;
 
-      setConnectedType("requestMade");
+      
       if(user && profileDetails && user.UserName !==profileDetails.UserName){
-          createRequest(user.UserName,profileDetails.UserName);
+          const response = await createRequest(user.UserName,profileDetails.UserName);
+          if(response ){
+              if(response.status ===201){
+                setConnectedType("requestMade");
+              }
+          }
       }
   }
   async function handleAccept(){

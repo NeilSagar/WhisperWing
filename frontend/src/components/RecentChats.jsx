@@ -26,8 +26,7 @@ export default function RecentChats() {
       let minutes = timeStamp.getMinutes();
       if(hour<10)hour = "0"+hour;
       if(minutes<10)minutes = "0"+minutes;
-      if(chatWithId === chat.UserId)
-      console.log( chat.UserName);
+      
       return (
         <div key={index} className={`p-2 flex items-center hover:cursor-default  ${chatWithId === chat.UserId ? 'bg-slate-700 text-white' : 'bg-slate-400 hover:bg-slate-500'} rounded-md `}
           onClick={()=>handleRecentChatSelect(index)}

@@ -115,7 +115,6 @@ export const handleUserDetails=async(req,res)=>{
     }
 }
 
-
 export const handleSearchedUser = async (req, res) => {
     try {
         const searchedUser = req.body.searchedUser;
