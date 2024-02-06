@@ -50,7 +50,7 @@ export default function Home() {
         socket.on("connect_error", (err) => {
           console.log(err.message); // prints the message associated with the error
         });
-        
+
         socket.emit('user-connected', { UserId: user.UserId, UserName: user.UserName });
         return () => {
             socket.off('chat-message', handleChatMessage);
