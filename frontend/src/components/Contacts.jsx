@@ -4,19 +4,13 @@ import { UserDetails } from '../context/UserContext';
 import Contact_x_Chat_card from './Contact_x_Chat_card';
 
 export default function Contacts({setSideBarMainScreen}) {
-  const {user,fetchUserDetails,setWindow} = UserDetails();
+  const {user,} = UserDetails();
 
   function handleClick(){
     setSideBarMainScreen("chats");
   }
 
-  function handleOpenChat(){
-    console.log("hello");
-    // setWindow('Chat');
-  }
-  useEffect(()=>{
-    console.log(user.Contacts);
-  },[]);
+
   return (
     <div className='h-[85vh]'>
       <div className='flex items-center shadow-sm p-1 h-[5vh]'>
