@@ -16,7 +16,7 @@ function handleChatMessage(payload,socket){
 
 const handleSocketConnection = (socket)=>{
     const socketId = socket.id;
-    console.log(socket.id)
+    // console.log(socket.id)
     socket.on("user-connected",(payload)=>{
         const {UserId} = payload;
         if(UserId){
