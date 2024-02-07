@@ -9,14 +9,10 @@ export default function RecentChats() {
 
   function handleRecentChatSelect(index){
     const openChatWithId = reversedRecentChats[index].UserId;
-    console.log(openChatWithId);
     setChatWithId(openChatWithId);
 
     setWindow('Chat');
   }
-  useEffect(()=>{
-    console.log(chatWithId);
-  },[chatWithId]);
   useEffect(()=>{
     if(recentChats){
       const reversedChats = [...recentChats].reverse();
@@ -38,7 +34,7 @@ export default function RecentChats() {
           onClick={()=>handleRecentChatSelect(index)}
         >
           <div className='icon '>
-            {chat.ProfilePic?<img className='w-10 h-10 rounded-full'
+            {chat.ProfilePic?<img className='w-10 h-10 rounded-full' alt=''
             src={chat.ProfilePic}/>:<Avatar sx={{ bgcolor: deepOrange[500] }}>{chat.Name && chat.Name[0]}</Avatar>}
           </div>
           <div className='flex-grow  py-1 px-2'>

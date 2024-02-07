@@ -10,7 +10,10 @@ export default function Chat({socket}) {
   const [chats,setChats] = useState(null);
 
   useEffect(()=>{
-    if(chatDetails)setChats(chatDetails.last100Messages);        
+    if(chatDetails){
+      setChats(chatDetails.last100Messages); 
+
+    }       
   },[chatDetails]);
 
   useEffect(()=>{

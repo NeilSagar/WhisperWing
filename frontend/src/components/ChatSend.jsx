@@ -3,7 +3,7 @@ import AttachmentIcon from '@mui/icons-material/Attachment';
 import SendIcon from '@mui/icons-material/Send';
 import { UserDetails } from '../context/UserContext';
 export default function ChatSend({setChats,socket}) {
-  const {user,chatDetails,chatWithId,updateChat,setRecentChats} = UserDetails();
+  const {user,chatDetails,chatWithId,updateChat,setRecentChats,setChatDetails} = UserDetails();
   const [message,setMessage] = useState("");
 
   function handleChange(e){
@@ -21,10 +21,11 @@ export default function ChatSend({setChats,socket}) {
             if(socket){
               socket.emit("chat-message",{UserId:user.UserId,chatWithId,Message:message,TimeStamp});
             }
-            setChats(prev=>{
-              return [...prev,response.message];
-            });
-
+            setChatDetails((prev) => ({
+              ...prev,
+              last100Messages: [...prev.last100Messages, { From: user.UserId, TimeStamp, Message:message }]
+            }));
+            
             setRecentChats((prev)=>{
               const newRecentChat = prev.filter((recentChat)=>recentChat.UserId!==chatWithId);
               newRecentChat.push({

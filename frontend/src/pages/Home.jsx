@@ -39,13 +39,12 @@ export default function Home() {
 
           if(FromId === chatWithId){
             setChatDetails((prev) => ({
-              ...prev,
+                ...prev,
               last100Messages: [...prev.last100Messages, { From: FromId, TimeStamp, Message }]
             }));
           }
           const currContactDetails  = findContactDetails (FromId);
           setRecentChats((prev)=>{
-            console.log(prev);
             const newData = prev.filter((contact)=>contact.UserId !== FromId);
             newData.push({
               UserId:currContactDetails.contactUserId || FromId,
@@ -69,7 +68,7 @@ export default function Home() {
 
             socket.on('chat-message', handleChatMessage);
             socket.on("connect_error", (err) => {
-                console.log(err.message); 
+                console.log("socket-warning:",err.message); 
             });
 
             socket.emit('user-connected', { UserId: user.UserId, UserName: user.UserName });

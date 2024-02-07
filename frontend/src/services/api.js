@@ -119,7 +119,6 @@ export const handleFetchRequests = async (username,token) =>{
         const response = error.response;
         const status = response ? response.status : 500;
         const message = response ? response.data.message : error.message;
-        console.log(message);
         return { status, message };
     }
 }
