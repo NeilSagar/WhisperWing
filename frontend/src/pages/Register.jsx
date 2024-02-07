@@ -124,7 +124,7 @@ export default function Register() {
     useEffect(()=>{
       if(success){
         setTimeout(()=>{
-          Navigate("/login");
+          Navigate("/");
         },3000);
       }
       if(errorMsg){
@@ -236,7 +236,7 @@ export default function Register() {
             p-2 mt-2 w-10/12 mx-auto min-w-fit' 
             style={{border:"1px solid red"}}>{errorMsg}</p>:<></>}
             
-            <p className='text-white hover:cursor-pointer mt-2'>Already registered? <span className=' text-blue-400' onClick={()=>{ Navigate("/Login") }}>Log In</span> </p>
+            <p className='text-white hover:cursor-pointer mt-2'>Already registered? <span className=' text-blue-400' onClick={()=>{ Navigate("/") }}>Log In</span> </p>
         </div>
     </div>
   )

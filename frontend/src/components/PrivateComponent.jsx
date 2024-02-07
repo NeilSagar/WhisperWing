@@ -5,6 +5,6 @@ import { UserAuth } from '../context/AuthContext'
 export default function PrivateComponent() {
     const {token} = UserAuth();
   return (
-    token?<Outlet/>:<Navigate to="/login"/>
+    token?<Outlet/>:<Navigate to="/"/>
   )
 }
