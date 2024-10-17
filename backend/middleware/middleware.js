@@ -15,7 +15,6 @@ async function authenticateJwt(req,res,next){
     const token=authorization.split(' ')[1];
     const tokenVerify = jwt.verify(token,process.env.JWT_SECRET);
     
-    // console.log(tokenVerify);
     try {
         const authUser = await authModel.findOne({_id:tokenVerify.userId});
         if(! authUser){

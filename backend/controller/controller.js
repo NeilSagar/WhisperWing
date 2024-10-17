@@ -76,7 +76,7 @@ export const handleLogIn = async(req,res)=>{
         }
 
         const jwt_secret = process.env.JWT_SECRET;
-        const token = jwt.sign({ userId: authUser._id }, jwt_secret, { expiresIn: '5d' });
+        const token = jwt.sign({ userId: authUser._id }, jwt_secret);
         return res.status(201).json({message:"Log In successful.",jwt:token});
     } catch (error) {
         return res.status(500).json({message:error.message});

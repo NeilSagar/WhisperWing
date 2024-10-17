@@ -26,9 +26,21 @@ const io = new Server(httpServer, {
   }
 });
 
+// app.use(cors({
+//   origin: 'https://baatchitfronenddeploy.onrender.com',  
+//   credentials: true,
+// },
+// ));
+// const io = new Server(httpServer, {
+// cors: {
+//   origin: "https://baatchitfronenddeploy.onrender.com",
+//   methods: ["GET", "POST"],
+//   credentials:true
+// }
+// });
 
-app.use(express.urlencoded({ extended: true,limit:'5mb' }));
-app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: true,limit:'10mb' }));
+app.use(express.json({ limit: '10mb' }));
 app.use("/",router);
 
 io.use(socketMiddleware);

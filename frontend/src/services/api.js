@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const url = "http://localhost:5000";
+const url = "http://localhost:5001";
+// const url ="https://baatchitbackent.onrender.com";
 
 export const handleRegister=async (userDetails)=>{
     try {
@@ -55,7 +56,9 @@ export const handleSearchedUser = async (searchedUser, token) => {
                 'Authorization': `Bearer ${token}`, // Corrected the header name ('Authorization' to 'Authorization')
             },
         });
+
         return { status: response.status, message: response.data.message };
+        
     } catch (error) {
         const response = error.response;
         const status = response ? response.status : 500;
