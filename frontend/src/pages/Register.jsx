@@ -154,7 +154,7 @@ export default function Register() {
         p-10 rounded-md text-center shadow-slate-900-2xl'>
             <div className='flex items-center'>
               <img src={logo} alt='logo' className='h-10'/>
-              <h1 className='text-white font-bold text-5xl m-2 font-'>Baatchit</h1>
+              <h1 className='text-white font-bold text-5xl m-2 font-'>Varta</h1>
             </div>
             <h2 className='text-white text-2xl mt-2'>Sign Up</h2>
 

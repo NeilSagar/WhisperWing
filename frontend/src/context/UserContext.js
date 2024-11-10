@@ -7,7 +7,7 @@ import { useUtils } from "./UtilsContext";
 const userContext = createContext();
 
 function UserProvider({children}){
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem("baatchit-profile")));
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem("varta-profile")));
     const [window,setWindow] = useState(null);
     const [profileDetails,setProfileDetails] = useState(null);
     const [requests,setRequests] = useState(null);
@@ -25,7 +25,7 @@ function UserProvider({children}){
 
                 setRecentChats(userData.recentChats);
                 setProfileDetails(userData.message);
-                localStorage.setItem("baatchit-profile", JSON.stringify(userData.message));
+                localStorage.setItem("varta-profile", JSON.stringify(userData.message));
                 return {status:201,result:userData.message};
             }
         }

@@ -17,7 +17,7 @@ export default function Navbar() {
   return (
         <div className='flex items-center justify-between py-3 px-2 bg-slate-700 h-[9vh]'>
         
-            <h2 className='text-white text-2xl font-bold min-w-fit'>Whisper Wing</h2>
+            <h2 className='text-white text-2xl font-bold min-w-fit'>Varta</h2>
             
             <div className='flex items-center justify-around basis-2/12'
               

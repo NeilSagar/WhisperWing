@@ -74,9 +74,15 @@ export const handleLogIn = async(req,res)=>{
         if(!isValidPassword){
             return res.status(401).json({message:"Invalid Password."});
         }
-        
+
         const jwt_secret = process.env.JWT_SECRET;
         const token = jwt.sign({ userId: authUser._id }, jwt_secret);
+
+        // adding cookie
+        res.cookie('varta-auth',token,{
+            maxAge: 3600000, // 1 hour in milliseconds
+        });
+
         return res.status(201).json({message:"Log In successful.",jwt:token});
     } catch (error) {
         return res.status(500).json({message:error.message});
