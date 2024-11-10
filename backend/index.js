@@ -13,31 +13,32 @@ dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 
+// app.use(cors({
+//     origin: 'http://localhost:3000',  
+//     credentials: true,
+//   },
+// ));
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//     methods: ["GET", "POST"],
+//     credentials:true
+//   }
+// });
+
 app.use(cors({
-    origin: 'http://localhost:3000',  
-    credentials: true,
-  },
-));
+  origin: true,  // Allows all origins
+  credentials: true,
+}));
+
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: true,  // Allows all origins
     methods: ["GET", "POST"],
-    credentials:true
+    credentials: true
   }
 });
 
-// app.use(cors({
-//   origin: 'https://baatchitfronenddeploy.onrender.com',  
-//   credentials: true,
-// },
-// ));
-// const io = new Server(httpServer, {
-// cors: {
-//   origin: "https://baatchitfronenddeploy.onrender.com",
-//   methods: ["GET", "POST"],
-//   credentials:true
-// }
-// });
 
 app.use(express.urlencoded({ extended: true,limit:'10mb' }));
 app.use(express.json({ limit: '10mb' }));
