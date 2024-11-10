@@ -12,7 +12,7 @@ function AuthProvider({children}){
 
     async function logInWithEmailandPassword(logInDetails){
         const result = await handleLogIn(logInDetails);
-        if(result && result.status ===201){
+        if(result && result.status ===200){
             setToken(Cookie.get('varta-auth'));
         }else if(result){
             setAuthErrorMsg(result.message);

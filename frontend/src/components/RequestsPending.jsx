@@ -7,12 +7,12 @@ import CloseIcon from '@mui/icons-material/Close';
 
 export default function RequestsPending() {
     const [pendingRequests,setPendingRequests] = useState(null);
-    const {user,requests,fetchRequests,verdictRequest} = UserDetails();
+    const {user,requests,fetchRequests,verdictRequest,setConnectedType} = UserDetails();
 
     async function handleAcceptRequest(index){
         const FromUsername = pendingRequests[index].UserName;
         const result = await verdictRequest(FromUsername,true);
-        if(result && result.status === 201){
+        if(result && result.status === 200){
             const updated_pendingRequests = pendingRequests.filter((request)=>request.UserName!==pendingRequests[index].UserName);
             setPendingRequests(updated_pendingRequests);
         }
@@ -20,7 +20,7 @@ export default function RequestsPending() {
     async function handleRejectRequest(index){
         const FromUsername = pendingRequests[index].UserName;
         const result = await verdictRequest(FromUsername,false);
-        if(result.status === 201){
+        if(result.status === 200){
             const updated_pendingRequests = pendingRequests.filter((request)=>request.UserName!==pendingRequests[index].UserName);
             setPendingRequests(updated_pendingRequests);
         }
@@ -31,7 +31,9 @@ export default function RequestsPending() {
     },[user]);
 
     useEffect(()=>{
+        if(requests)
         setPendingRequests(requests);
+        console.log("requests:",requests);
     },[requests]);
 
   return (

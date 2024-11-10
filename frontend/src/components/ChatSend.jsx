@@ -16,7 +16,7 @@ export default function ChatSend({setChats,socket}) {
     }
     if(chatDetails && chatWithId === chatDetails.chatWithUserId){
         const response = await updateChat(chatWithId,message);
-        if(response && response.status===201){
+        if(response && response.status===200){
             const TimeStamp = response.message.TimeStamp;
             if(socket){
               socket.emit("chat-message",{UserId:user.UserId,chatWithId,Message:message,TimeStamp});

@@ -22,7 +22,7 @@ export default function Profile(props) {
       if(user && profileDetails && user.UserName !==profileDetails.UserName){
           const response = await createRequest(user.UserName,profileDetails.UserName);
           if(response ){
-              if(response.status ===201){
+              if(response.status ===200){
                 setConnectedType("requestMade");
               }
           }
@@ -32,7 +32,7 @@ export default function Profile(props) {
     if(user && profileDetails && user.UserId===profileDetails.UserId)return;
     if(profileDetails && profileDetails.UserName){
         const result = await verdictRequest(profileDetails.UserName,true);
-        if(result && result.status ===201){
+        if(result && result.status ===200){
           setConnectedType("connected");
         }
     }
@@ -42,7 +42,7 @@ export default function Profile(props) {
     if(user && profileDetails && user.UserId===profileDetails.UserId)return;
     if(profileDetails && profileDetails.UserName){
       const result = await verdictRequest(profileDetails.UserName,false);
-      if(result && result.status ===201){
+      if(result && result.status ===200){
         setConnectedType("addConnection");
       }
     }
@@ -93,6 +93,7 @@ export default function Profile(props) {
       <div>
         <button disabled className='bg-green-400 rounded-full p-2  px-3 flex items-center'><FaUserFriends/>Connected</button>
       </div>:<></>}
+
       {connectedType && connectedType==="requestCame"?
       <div className='flex flex-wrap'>
         <button onClick={handleAccept}
@@ -102,6 +103,7 @@ export default function Profile(props) {
          className='bg-red-400 rounded-full p-2  px-3 m-2 flex items-center'><CloseIcon/> Reject
         </button>
       </div>:<></>}
+      
       {connectedType && connectedType==="requestMade"?
       <div>
         <button disabled className='bg-gray-400 rounded-full p-2  px-3 flex items-center'><AccessTimeIcon/> requested</button>

@@ -1,12 +1,14 @@
-import bcrypt from "bcrypt";
+import bcrypt, { compareSync } from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import authModel from "../models/authModel.js";
 import userModel from "../models/userModel.js";
 import chatModel from "../models/chatModel.js";
+import { setCacheData, getCacheData, deleteCachedKey } from "../util/redisImplementation.js";
 
 import dotenv from "dotenv";
 dotenv.config();
+
 
 function sortByLastMessageTimeStamp(a, b) {
     const val =   a.lastMessage.TimeStamp - b.lastMessage.TimeStamp;
@@ -50,7 +52,7 @@ export const handleRegister = async(req,res)=>{
         await newChat.save();
         await newAuth.save();
 
-        return res.status(201).json({message:"User created."});
+        return res.status(200).json({message:"User created."});
         
     } catch (error) {
         console.log("register Route Error:",error.message);
@@ -83,7 +85,7 @@ export const handleLogIn = async(req,res)=>{
             maxAge: 3600000, // 1 hour in milliseconds
         });
 
-        return res.status(201).json({message:"Log In successful.",jwt:token});
+        return res.status(200).json({message:"Log In successful.",jwt:token});
     } catch (error) {
         return res.status(500).json({message:error.message});
     }
@@ -91,41 +93,68 @@ export const handleLogIn = async(req,res)=>{
 
 export const handleUserDetails=async(req,res)=>{
     const _id = req.user_id;
+    const redisKey = 'user:'+_id;
     try {
-        const result = await userModel.findOne({UserId:_id}).select();
-        if(result === null) return res.status(404).json({message:"not found"});
-        const chatsQuery = await chatModel.findOne({UserId:_id}).select('Chats');
-        const recentChats = []; 
-        
-        if(chatsQuery){
-            const chats = chatsQuery.Chats;
+        // redis{user+_id : {recentChats,userData}}
+        const cacheResult = await getCacheData(redisKey);
+        if(cacheResult == null){
+            const userData = await userModel.findOne({UserId:_id}).select();
+            if(userData === null) return res.status(404).json({message:"not found"});
+            const chatsQuery = await chatModel.findOne({UserId:_id}).select('Chats');
+            const recentChats = []; 
             
-            for(let i=0;i<chats.length;i++){
-                if(chats[i].conversation.length!==0){
-                    const curr = {
-                        UserName:chats[i].UserName,
-                        UserId:chats[i].UserId,
-                        Name:chats[i].Name,
-                        ProfilePic:chats[i].ProfilePic,
-                        lastMessage:chats[i].conversation[chats[i].conversation.length-1]
+            if(chatsQuery){
+                const chats = chatsQuery.Chats;
+                
+                for(let i=0;i<chats.length;i++){
+                    if(chats[i].conversation.length!==0){
+                        const curr = {
+                            UserName:chats[i].UserName,
+                            UserId:chats[i].UserId,
+                            Name:chats[i].Name,
+                            ProfilePic:chats[i].ProfilePic,
+                            lastMessage:chats[i].conversation[chats[i].conversation.length-1]
+                        }
+                        recentChats.push(curr);
                     }
-                    recentChats.push(curr);
                 }
+                recentChats.sort(sortByLastMessageTimeStamp);
             }
-            recentChats.sort(sortByLastMessageTimeStamp);
-            
+            if(userData && recentChats){
+                const result = {message:userData,recentChats};
+                setCacheData(redisKey,result);
+            }
+
+            return res.status(200).json(JSON.stringify(result));
+        }else{
+            return res.status(200).json(cacheResult);
         }
-        return res.status(201).json({message:result,recentChats:recentChats});
     } catch (error) {
-        return res.status(500).json({message:error.message});
+        console.log("error:",error.message);
+        return res.status(404).json({message:error.message});
     }
 }
 
 export const handleSearchedUser = async (req, res) => {
     try {
         const searchedUser = req.body.searchedUser;
-        const result = await userModel.find({ Name: { $regex: new RegExp(searchedUser, 'i') } }).limit(10).select('UserId Name UserName ProfilePic');
-        res.status(201).json({message:result}); 
+        const redisKey = 'searchedUser:'+searchedUser;
+        const cachedSearchedUser = await getCacheData(redisKey);
+
+        if(cachedSearchedUser==null){
+            const searchedUserDetail = await userModel.find({ 
+                Name: { $regex: new RegExp(searchedUser, 'i') } 
+            }).limit(10).select('UserId Name UserName ProfilePic');
+
+            const result = {message:searchedUserDetail};
+            setCacheData(redisKey,result);
+            return res.status(200).json(result);
+
+        }else{
+            const result = cachedSearchedUser;
+            return res.status(200).json(result);
+        }
+
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ error: 'Internal Server Error' }); // Handle errors appropriately
@@ -134,22 +163,33 @@ export const handleSearchedUser = async (req, res) => {
 
 export const handleSearchedUserDetails = async(req,res) =>{
     const {searchedUserName,currentUserName} = req.body;
+    const redisKey = 's_user:'+searchedUserName+'c_user:'+currentUserName;
+    console.log(redisKey);
     try {
         if(searchedUserName == null){
             return res.status(404).json({message:"searchedUserName is necessary."});
         }
+        const cachedData = await getCacheData(redisKey);
 
-        const result = await userModel.findOne({UserName:searchedUserName});
+        if(cachedData != null){
+            const result = cachedData;
+            return res.status(200).json(result);
+        }
+
+        const userDetails = await userModel.findOne({UserName:searchedUserName});
         
-        if(result == null){
+        if(userDetails == null){
             return res.status(404).json({message:"Details Not found."});
         }
         const requestMade = await chatModel.findOne({UserName:currentUserName, 'RequestsSent.UserName': searchedUserName }) !==null;
         const requestCame = await chatModel.findOne({UserName:currentUserName, 'RequestsReceived.UserName':searchedUserName}) !==null;
         const connected = await userModel.findOne({UserName:currentUserName,'Contacts.contactUserName':searchedUserName}) !==null;
-        const queryRes = { ...result.toObject(), requestMade,connected,requestCame };
-        
-        return res.status(201).json({message:queryRes});
+        const queryRes = { ...userDetails.toObject(), requestMade,connected,requestCame };
+
+        const result = {message:queryRes};
+        setCacheData(redisKey,result);
+
+        return res.status(200).json(result);
 
     } catch (error) {
         console.log(error.message);
@@ -160,7 +200,8 @@ export const handleSearchedUserDetails = async(req,res) =>{
 export const handleCreateRequest = async (req,res)=>{
 
     const {userNameFrom,userNameTo} = req.body;
-    
+    // remove redis key so that cached result are not sent when fetching requests received by userNameTo
+    const redisKeyToRemove = "requestsTo:"+userNameTo;
     if (!userNameFrom || !userNameTo) {
         return res.status(404).json({ message: "userNameFrom and userNameTo are required" });
     }
@@ -168,6 +209,9 @@ export const handleCreateRequest = async (req,res)=>{
         return res.status(404).jsons({message:"Can not send request to itself."});
     }
     try {
+        //deleting from cache
+        deleteCachedKey(redisKeyToRemove);
+
         const chatFromDetails = await chatModel.findOne({ UserName: userNameFrom });
         const chatToDetails = await chatModel.findOne({ UserName: userNameTo });
         const picData = await userModel.findOne({ UserName: userNameFrom }).select('ProfilePic');
@@ -193,7 +237,7 @@ export const handleCreateRequest = async (req,res)=>{
         const result1 = await chatFromDetails.save();
         const result2 = await chatToDetails.save();
         
-        return res.status(201).json({ message: "Request sent successfully" });
+        return res.status(200).json({ message: "Request sent successfully" });
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ error: 'Internal Server Error' }); 
@@ -204,10 +248,19 @@ export const handleFetchRequests = async(req,res)=>{
     const {UserName} = req.body;
     if(!UserName)return res.status(404).json({message:"Username's data not found"});
 
+    const redisKey = "requestsTo:"+UserName;
+
     try {
-        const result = await chatModel.findOne({UserName}).select('RequestsReceived');
-        const query = result['RequestsReceived'];
-        return res.status(201).json({message:query});
+        const cachedData = await getCacheData(redisKey);
+        if(cachedData != null){
+            const result = cachedData;
+            return res.status(200).json(result);
+        }
+        const queryRes = await chatModel.findOne({UserName}).select('RequestsReceived');
+        const requestReceived = queryRes['RequestsReceived'];
+        const result = {message:requestReceived};
+        setCacheData(redisKey,result);
+        return res.status(200).json(result);
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ error: 'Internal Server Error' }); 
@@ -216,12 +269,23 @@ export const handleFetchRequests = async(req,res)=>{
 
 export const handleRequest = async (req, res) => {
     const { From, To, Verdict } = req.body;
+
+    const redisKeyToRemove1 = "requestsTo:"+To;
+
     try {
+        //deleting cache
+        deleteCachedKey(redisKeyToRemove1);
+
         const resultFrom = await chatModel.findOne({ UserName: From });
         const resultTo = await chatModel.findOne({ UserName: To });
         if (resultFrom === null || resultTo === null) {
             return res.status(404).json({ fromExists: resultFrom !== null, toExists: resultTo !== null });
         }
+        //removing cache of user:userid that consists of requests in chatmodel
+        const redisKeyToRemove2 = "user:"+resultFrom.UserId;
+        const redisKeyToRemove3 = "user:"+resultFrom.UserId;
+        deleteCachedKey(redisKeyToRemove2);
+        deleteCachedKey(redisKeyToRemove3);
 
         if(Verdict){
             await userModel.findOneAndUpdate(
@@ -291,7 +355,7 @@ export const handleRequest = async (req, res) => {
             { $pull: { RequestsReceived: { UserName: From } } }
         ).lean();
 
-        return res.status(201).json({ message: "connected" });
+        return res.status(200).json({ message: "connected" });
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -300,10 +364,15 @@ export const handleRequest = async (req, res) => {
 
 export const handleFetchingChat = async (req,res)=>{
     const {userId,chatWithId} = req.body;
-    
+    const redisKey = "chat-user:"+userId+"chatWithId"+chatWithId;
     try {
         if(!userId || !chatWithId) return res.status(404).status({message:"FromId to ToId required"});
-        
+        const cachedData = await getCacheData(redisKey);
+        if(cachedData != null){
+            const result = cachedData;
+            return res.status(200).json(result);
+        }
+
         const chatWithQuery = await chatModel.findOne({ "UserId": userId }).select('Chats');
         if(chatWithQuery){
             const targetChat = chatWithQuery.Chats.find(chat => chat.UserId === chatWithId);
@@ -315,7 +384,10 @@ export const handleFetchingChat = async (req,res)=>{
             } = targetChat;
             const last100Messages = targetChat.conversation.slice(-100);
             const chatWithDetails ={chatWithUserId,chatWithUserName,chatWithName,chatWithProfilePic,last100Messages};
-            return res.status(201).json({message:chatWithDetails});
+            const result = {message:chatWithDetails};
+            //caching
+            setCacheData(redisKey,result);
+            return res.status(200).json(result);
         }
         if(!chatWithQuery){
             return res.status(404).json({message:"Chats data not available for this UserId"});
@@ -327,10 +399,19 @@ export const handleFetchingChat = async (req,res)=>{
 
 export const handleUpdatingChat=async (req,res)=>{
     const {chatWithId,UserId,message}=req.body;
+
+    const redisRemoveKey1 = "chat-user:"+UserId+"chatWithId"+chatWithId;
+    const redisRemoveKey2 = "chat-user:"+chatWithId+"chatWithId"+UserId;
+    
     try {
         if(!chatWithId || !UserId || !message){
             return res.status(404).json({message:"Need chatWithId,UserId,message"});
         }
+
+        //delete caches
+        deleteCachedKey(redisRemoveKey1);
+        deleteCachedKey(redisRemoveKey2);
+
         const conversationData = {
             From:UserId,
             Message:message
@@ -368,7 +449,7 @@ export const handleUpdatingChat=async (req,res)=>{
                 }
             }
         }
-        return res.status(201).json({message:conversationData});
+        return res.status(200).json({message:conversationData});
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({message:"Internal Server Error."});

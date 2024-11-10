@@ -20,14 +20,13 @@ function UserProvider({children}){
     async function fetchUserDetails() {
         if (token) {
             const userData = await handleFetchUserDetails(token);
-            if (userData.status === 201) {
+            if (userData.status === 200) {
                 // Set the user details using setUser function
                 setUser(userData.message);
-
                 setRecentChats(userData.recentChats);
                 setProfileDetails(userData.message);
                 localStorage.setItem("varta-profile", JSON.stringify(userData.message));
-                return {status:201,result:userData.message};
+                return {status:200,result:userData.message};
             }
         }
     }
@@ -37,7 +36,7 @@ function UserProvider({children}){
 
         if(user && user.UserName === username){
             const response = await fetchUserDetails();
-            if(response && response.status === 201){
+            if(response && response.status === 200){
                 setProfileDetails(response.result);
                 setWindow("Profile");
                 return;
@@ -56,7 +55,7 @@ function UserProvider({children}){
 
     async function createRequest(UserNameFrom,UserNameTo){
         const response = await handleCreateRequest(UserNameFrom,UserNameTo,token);
-        if(response && response.status===201){
+        if(response && response.status===200){
             return response;
         }
     }
@@ -64,7 +63,7 @@ function UserProvider({children}){
     async function fetchRequests(username){
         const response = await handleFetchRequests(username,token);
         if(response){
-            if(response.status === 201){
+            if(response.status === 200){
                 setRequests(response.message);
             }
         }
@@ -86,7 +85,7 @@ function UserProvider({children}){
     async function fetchChat(){
         if(chatWithId){
             const response = await handleFetchChat(user.UserId,chatWithId,token);
-            if(response && response.status === 201){
+            if(response && response.status === 200){
                 setChatDetails(response.message);
             }
         }

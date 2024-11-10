@@ -103,7 +103,7 @@ export default function Register() {
       if(errorMsg || success)setLoading(false);
       
       if(result){
-        if(result.status === 201){
+        if(result.status === 200){
           setSuccess(true);
         }else{
           setErrorMsg(result.message);

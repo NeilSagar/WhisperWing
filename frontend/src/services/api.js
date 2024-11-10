@@ -48,7 +48,9 @@ export const handleLogIn = async (logInDetails) => {
 export const handleFetchUserDetails = async (token) => {
     try {
         const response = await api.get("/userDetails", authHeader(token));
-        return { status: response.status, message: response.data.message, recentChats: response.data.recentChats };
+        const result = { status: response.status, message: response.data.message, recentChats: response.data.recentChats };
+        // console.log(result);
+        return result;
     } catch (error) {
         return handleError(error);
     }

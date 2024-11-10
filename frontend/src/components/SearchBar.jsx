@@ -18,7 +18,7 @@ export default function Searchbar() {
     }
     async function handleSearched(){
       const response = await handleSearchedUser(searchedUser,token);
-      if(response && response.status===201){
+      if(response && response.status===200){
          setResults(response.message);
       }
     }
