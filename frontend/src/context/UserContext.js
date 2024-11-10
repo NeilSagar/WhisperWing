@@ -16,6 +16,7 @@ function UserProvider({children}){
     const [recentChats,setRecentChats] = useState(null);
     const {token} = UserAuth();
     const {setClearFunctions} = useUtils();
+
     async function fetchUserDetails() {
         if (token) {
             const userData = await handleFetchUserDetails(token);
@@ -81,6 +82,7 @@ function UserProvider({children}){
             return response;
         }
     }
+    
     async function fetchChat(){
         if(chatWithId){
             const response = await handleFetchChat(user.UserId,chatWithId,token);

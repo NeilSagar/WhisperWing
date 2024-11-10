@@ -4,9 +4,6 @@ import { UserAuth } from '../context/AuthContext'
 
 export default function PrivateComponent() {
     const {token} = UserAuth();
-    useEffect(()=>{
-      console.log(token);
-    },[token]);
   return (
     token?<Outlet/>:<Navigate to="/"/>
   )

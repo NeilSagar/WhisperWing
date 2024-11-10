@@ -46,7 +46,6 @@ export const handleLogIn = async (logInDetails) => {
 
 // API function to fetch user details
 export const handleFetchUserDetails = async (token) => {
-    console.log(process.env.REACT_APP_API_URL);
     try {
         const response = await api.get("/userDetails", authHeader(token));
         return { status: response.status, message: response.data.message, recentChats: response.data.recentChats };

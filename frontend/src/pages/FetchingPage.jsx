@@ -2,6 +2,7 @@ import { Backdrop, CircularProgress } from '@mui/material'
 import React, { useEffect } from 'react'
 import { UserDetails } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom';
+import { UserAuth } from '../context/AuthContext';
 
 const backdropStyle={
     backgroundColor:"#fff", 
@@ -11,6 +12,7 @@ const backdropStyle={
 
 export default function FetchingPage() {
     const {fetchUserDetails,user,profileDetails,setWindow,setProfileDetails} = UserDetails();
+    const {token} = UserAuth();
     const navigate = useNavigate();
 
 
@@ -28,7 +30,7 @@ export default function FetchingPage() {
 
     useEffect(()=>{
         fetchUserDetails();
-    },[]);
+    },[user,token]);
     
   return (
     <Backdrop
