@@ -9,7 +9,7 @@ import SearchBar from '../components/SearchBar';
 import RequestsPending from '../components/RequestsPending';
 import { io } from "socket.io-client";
 
-const URL = "http://localhost:5001";
+const URL = process.env.REACT_APP_API_URL;
 
 export default function Home() {
     const { window, user,chatWithId,chatDetails,setChatDetails,recentChats,setRecentChats } = UserDetails();
